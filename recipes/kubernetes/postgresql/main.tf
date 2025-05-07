@@ -9,17 +9,17 @@ terraform {
 
 variable "context" {
   description = "This variable contains Radius recipe context."
-  type = any
+  type        = any
 }
 
 locals {
   uniqueName = var.context.resource.name
-  port     = 5432
-  namespace = var.context.runtime.kubernetes.namespace
+  port       = 5432
+  namespace  = var.context.runtime.kubernetes.namespace
 }
 
 resource "random_password" "password" {
-  length           = 16
+  length = 16
 }
 
 resource "kubernetes_deployment" "postgresql" {
@@ -51,7 +51,7 @@ resource "kubernetes_deployment" "postgresql" {
             value = random_password.password.result
           }
           env {
-            name = "POSTGRES_USER"
+            name  = "POSTGRES_USER"
             value = "postgres"
           }
           env {
@@ -81,15 +81,15 @@ resource "kubernetes_service" "postgres" {
     port {
       port        = local.port
       target_port = local.port
-    } 
+    }
   }
 }
 
 output "result" {
   value = {
     values = {
-      host = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_service.postgres.metadata[0].namespace}.svc.cluster.local"
-      port = local.port
+      host     = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_service.postgres.metadata[0].namespace}.svc.cluster.local"
+      port     = local.port
       database = "postgres_db"
       username = "postgres"
       password = random_password.password.result
